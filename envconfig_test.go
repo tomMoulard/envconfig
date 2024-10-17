@@ -804,8 +804,27 @@ func TestErrorMessageForRequiredAltVar(t *testing.T) {
 		t.Error("no failure when missing required variable")
 	}
 
-	if !strings.Contains(err.Error(), " BAR ") {
-		t.Errorf("expected error message to contain BAR, got \"%v\"", err)
+	if !strings.Contains(err.Error(), " ENV_CONFIG_BAR ") {
+		t.Errorf("expected error message to contain ENV_CONFIG_BAR, got \"%v\"", err)
+	}
+}
+
+func TestErrorMessageForRequiredAltVarWithKey(t *testing.T) {
+	var s struct {
+		Bar struct {
+			Foo string `envconfig:"FOO" required:"true"`
+		} `envconfig:"BAR"`
+	}
+
+	os.Clearenv()
+	err := Process("env_config", &s)
+
+	if err == nil {
+		t.Error("no failure when missing required variable")
+	}
+
+	if !strings.Contains(err.Error(), " ENV_CONFIG_BAR_FOO ") {
+		t.Errorf("expected error message to contain ENV_CONFIG_BAR_FOO, got \"%v\"", err)
 	}
 }
 
